@@ -1,0 +1,36 @@
+name: Website Load Test
+
+on:
+  workflow_dispatch: # এটি দিলে আপনি নিজে বাটন চেপে রান করতে পারবেন
+    inputs:
+      target_url:
+        description: 'Target Website URL'
+        required: true
+        default: 'https://example.com'
+      num_users:
+        description: 'Number of Users'
+        required: true
+        default: '20'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install requests
+
+    - name: Run Load Test
+      env:
+        TARGET_URL: ${{ github.event.inputs.target_url }}
+        NUM_USERS: ${{ github.event.inputs.num_users }}
+      run: python load_test.py
