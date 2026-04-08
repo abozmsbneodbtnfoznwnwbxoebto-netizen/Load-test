@@ -1,21 +1,20 @@
-name: Website Load Test
+name: Infinite Load Test
 
 on:
-  workflow_dispatch: # এটি দিলে আপনি নিজে বাটন চেপে রান করতে পারবেন
+  workflow_dispatch:
     inputs:
       target_url:
         description: 'Target Website URL'
         required: true
         default: 'https://example.com'
-      num_users:
-        description: 'Number of Users'
+      num_threads:
+        description: 'Number of Concurrent Threads (Try 10-50)'
         required: true
         default: '20'
 
 jobs:
-  build:
+  stress-test:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -26,11 +25,13 @@ jobs:
         python-version: '3.9'
 
     - name: Install dependencies
-      run: |
-        pip install requests
+      run: pip install requests
 
-    - name: Run Load Test
+    - name: Run Infinite Test
       env:
         TARGET_URL: ${{ github.event.inputs.target_url }}
-        NUM_USERS: ${{ github.event.inputs.num_users }}
+        NUM_THREADS: ${{ github.event.inputs.num_threads }}
+      # এটি সর্বোচ্চ ৬ ঘণ্টা চলবে (GitHub Actions এর লিমিট)
       run: python load_test.py
+      timeout-minutes: 360 
+      
